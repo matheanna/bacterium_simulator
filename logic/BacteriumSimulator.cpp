@@ -39,7 +39,8 @@ void BacteriumSimulator::simulate(int rounds) {
             bool isAlive = bacterium->isAlive(nearbyOf(bacterium, dish.getBacteriumList()));
             if (isAlive) { survivors.push_back(bacterium); }
             else {
-                dish.getAvailablePositions().push_back(make_shared<Position>(bacterium->getPosition()));
+                dish.addToAvailablePositions(make_shared<Position>(bacterium->getPosition()));
+                dish.removeBacteriumFromBoard(bacterium->getPosition());
             }
         }
 
@@ -48,6 +49,7 @@ void BacteriumSimulator::simulate(int rounds) {
                 shared_ptr<Bacterium> b = bacterium->duplicate(dish.getAvailablePositions());
                 newList.push_back(b);
                 dish.removePosition(b->getPosition());
+                dish.addBacteriumToBoard(b);
             } catch (NoPositionException e) {
                 //cout << e.what() << endl;
             }
@@ -62,14 +64,23 @@ void BacteriumSimulator::setUpDish() {
     for (int i = 0; i < dish.getSize() / 2; i++) { //takes up half the dish
         Position pos = Random::getRandomFrom(dish.getAvailablePositions());
         switch (Random::random(1, 3)) {
-            case 1:
-                bacteriumList.push_back(std::make_shared<Bacillus>(pos));
+            case 1: {
+                shared_ptr<Bacillus> bacillus = make_shared<Bacillus>(pos);
+                bacteriumList.push_back(bacillus);
+                dish.addBacteriumToBoard(bacillus);
+            }
                 break;
-            case 2:
-                bacteriumList.push_back(std::make_shared<Coccus>(pos));
+            case 2: {
+                shared_ptr<Coccus> coccus = make_shared<Coccus>(pos);
+                bacteriumList.push_back(coccus);
+                dish.addBacteriumToBoard(coccus);
+            }
                 break;
-            case 3:
-                bacteriumList.push_back(make_shared<Spirillum>(pos));
+            case 3: {
+                shared_ptr<Spirillum> spirillum = make_shared<Spirillum>(pos);
+                bacteriumList.push_back(spirillum);
+                dish.addBacteriumToBoard(spirillum);
+            }
                 break;
         }
         dish.removePosition(pos);
