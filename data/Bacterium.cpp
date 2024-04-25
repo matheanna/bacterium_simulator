@@ -35,3 +35,7 @@ vector<unique_ptr<Position>> Bacterium::getNearbyPositions() const {
 Position Bacterium::getPosition() const {
     return position;
 }
+
+void Bacterium::setPosition(Position position) {
+this->position = position;
+}

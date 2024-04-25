@@ -15,7 +15,7 @@ public:
     Bacterium(Position pos, int nearby);
 
     Position getPosition() const;
-
+    void setPosition(Position position);
     vector<unique_ptr<Position>> getNearbyPositions() const;
 
     virtual bool isAlive(vector<shared_ptr<Bacterium>> nearbyBacteria) = 0;
