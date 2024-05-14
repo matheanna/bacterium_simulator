@@ -40,3 +40,7 @@ shared_ptr<Bacterium> Coccus::duplicate(vector<shared_ptr<Position>> availablePo
     return make_shared<Coccus>(pos);
 
 }
+
+shared_ptr<Bacterium> Coccus::duplicate(Position position) {
+    return make_shared<Coccus>(position);
+}

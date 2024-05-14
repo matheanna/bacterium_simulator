@@ -14,7 +14,7 @@ Bacillus::Bacillus(Position pos) : Bacterium(pos, NEARBY) {}
 
 
 bool Bacillus::isAlive(vector<shared_ptr<Bacterium>> nearbyBacteria) {
-    for (shared_ptr<Bacterium> bacterium: nearbyBacteria) {
+    for (const shared_ptr<Bacterium> &bacterium: nearbyBacteria) {
         if (dynamic_cast<Coccus *>(bacterium.get())) {
             return true;
         }
@@ -34,8 +34,9 @@ shared_ptr<Bacterium> Bacillus::duplicate(vector<shared_ptr<Position>> available
     Position pos = Random::getRandomFrom(availableNearby);
     return make_shared<Bacillus>(pos);
 }
-
-
+shared_ptr<Bacterium> Bacillus::duplicate(Position position){
+    return make_shared<Bacillus>(position);
+}
 
 
 
