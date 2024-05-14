@@ -11,7 +11,7 @@ public:
     Coccus(Position pos);
     bool isAlive(vector<shared_ptr<Bacterium>> nearbyBacteria) override;
     shared_ptr<Bacterium> duplicate(vector<shared_ptr<Position>> availablePositions) override;
-
+    shared_ptr<Bacterium> duplicate(Position position) override;
 private:
     static int NEARBY;
 
