@@ -52,11 +52,11 @@ void PetriDish::removePosition(Position pos) {
 }
 
 shared_ptr<Bacterium> PetriDish::getBacteriumOn(int X, int Y) {
-    return board.at(Y).at(X);
+    return board.at(X).at(Y);
 }
 
 void PetriDish::addBacteriumToBoard(const shared_ptr<Bacterium>& bacterium) {
-    board.at(bacterium->getPosition().Y).at(bacterium->getPosition().X) = bacterium;
+    board.at(bacterium->getPosition().X).at(bacterium->getPosition().Y) = bacterium;
 }
 
 vector<vector<shared_ptr<Bacterium>>> PetriDish::getBoard() const {
@@ -64,7 +64,7 @@ vector<vector<shared_ptr<Bacterium>>> PetriDish::getBoard() const {
 }
 
 void PetriDish::removeBacteriumFromBoard(Position position) {
-    board.at(position.Y).at(position.X) = nullptr;
+    board.at(position.X).at(position.Y) = nullptr;
 }
 
 void PetriDish::addToAvailablePositions(shared_ptr<Position> position) {
