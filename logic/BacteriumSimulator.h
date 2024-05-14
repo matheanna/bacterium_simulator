@@ -14,6 +14,8 @@ public:
     void simulate(int rounds);
 private:
     void setUpDish();
+    shared_ptr<Position> pushBacteria(Position startingPos);
+    Position findFreePosition(int x, int y);
     PetriDish dish;
 };
 
