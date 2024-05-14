@@ -24,6 +24,7 @@ add_executable(bacterial_problem main.cpp
         logic/ui/Printer.h
         logic/ui/UserInput.cpp
         logic/ui/UserInput.h
+        data/Tile.h
 )
 
 add_subdirectory(Google_tests)
