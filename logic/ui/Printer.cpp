@@ -7,7 +7,6 @@
 #include "../../data/bacteria/Coccus.h"
 #include "../../data/bacteria/Spirillum.h"
 #include <iostream>
-#include <algorithm>
 
 using namespace std;
 
@@ -32,7 +31,6 @@ void Printer::printBoard(const vector<shared_ptr<Bacterium>> &bacteria, int dish
     vector<vector<string>> board = createEmptyBoard(dishSize);
 
     //place bacteria onto board
-//if all bacteria is stored in a matrix based on its position, we don't need to cast them here
     for (const auto &bacterium: bacteria) {
         if (auto b = dynamic_pointer_cast<Bacillus>(bacterium)) {
             int x = bacterium->getPosition().X;
