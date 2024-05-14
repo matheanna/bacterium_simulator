@@ -3,14 +3,13 @@
 //
 #include "UserInput.h"
 #include <iostream>
-#include <bits/stdc++.h>
 
 using namespace std;
 
 
 int UserInput::getDishSize() {
     int dishSize;
-    cout << "enter dish with/height" << endl;
+    cout << "enter dish width/height" << endl;
     cin >> dishSize;
     return dishSize;
 }
