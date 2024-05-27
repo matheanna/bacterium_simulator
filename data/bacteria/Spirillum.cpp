@@ -35,3 +35,7 @@ shared_ptr<Bacterium> Spirillum::duplicate(vector<shared_ptr<Position>> availabl
     Position pos = Random::getRandomFrom(availableNearby);
     return make_shared<Spirillum>(pos);
 }
+
+shared_ptr<Bacterium> Spirillum::duplicate(Position position) {
+    return make_shared<Spirillum>(position);
+}

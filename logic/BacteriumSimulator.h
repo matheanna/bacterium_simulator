@@ -5,8 +5,10 @@
 #define BACTERIAL_PROBLEM_BACTERIUMSIMULATOR_H
 #include <vector>
 #include <iostream>
+#include <map>
 #include "../data/Bacterium.h"
 #include "../data/PetriDish.h"
+#include "../data/Tile.h"
 
 class BacteriumSimulator {
 public:
@@ -14,6 +16,7 @@ public:
     void simulate(int rounds);
 private:
     void setUpDish();
+    shared_ptr<Position> pushBacteria(Position startingPos);
     PetriDish dish;
 };
 

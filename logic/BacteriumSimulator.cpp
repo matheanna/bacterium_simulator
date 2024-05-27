@@ -11,7 +11,8 @@
 #include <bits/stdc++.h>
 #include <utility>
 
-vector<shared_ptr<Bacterium>> nearbyOf(const shared_ptr<Bacterium> &bacterium, const vector<shared_ptr<Bacterium>> &bacteriumList) {
+vector<shared_ptr<Bacterium>>
+nearbyOf(const shared_ptr<Bacterium> &bacterium, const vector<shared_ptr<Bacterium>> &bacteriumList) {
     vector<shared_ptr<Bacterium>> result;
     for (auto const &b: bacteriumList) {
         for (auto const &p: bacterium->getNearbyPositions()) {
@@ -25,12 +26,23 @@ vector<shared_ptr<Bacterium>> nearbyOf(const shared_ptr<Bacterium> &bacterium, c
 
 BacteriumSimulator::BacteriumSimulator(PetriDish &dish) : dish(std::move(dish)) {}
 
+shared_ptr<Position> BacteriumSimulator::pushBacteria(Position startingPos) {
+    vector<shared_ptr<Tile>> route = dish.getRouteToFreePosition(startingPos);
+    for (int i = route.size() - 2; i >= 0; i--) {
+        shared_ptr<Bacterium> b = route.at(i)->bacterium;
+        dish.addToAvailablePositions(make_shared<Position>(b->getPosition()));
+        b->setPosition(Position(route.at(i + 1)->position->X, route.at(i + 1)->position->Y));
+        dish.removePosition(Position(Position(route.at(i + 1)->position->X, route.at(i + 1)->position->Y)));
+    }
+    return route.at(0)->position;
+}
 
 void BacteriumSimulator::simulate(int rounds) {
     setUpDish();
+
+    Printer p;
+    p.printBoard(dish.getBacteriumList(), dish.getSize(), 0);
     for (int i = 0; i < rounds; i++) {
-        Printer p;
-        p.printBoard(dish.getBacteriumList(), dish.getSize(), i+1);
 
         vector<shared_ptr<Bacterium>> survivors;
         vector<shared_ptr<Bacterium>> newList;
@@ -50,40 +62,43 @@ void BacteriumSimulator::simulate(int rounds) {
                 newList.push_back(b);
                 dish.removePosition(b->getPosition());
                 dish.addBacteriumToBoard(b);
-            } catch (NoPositionException e) {
-                //cout << e.what() << endl;
+            } catch (NoPositionException &e) {
+
+                try {
+                    shared_ptr<Position> freedPosition = pushBacteria(bacterium->getPosition());
+                    bacterium->duplicate(*freedPosition);
+                } catch (NoPositionException &e) {
+                    cout << "board is full" << endl;
+                }
             }
         }
         newList.insert(newList.end(), survivors.begin(), survivors.end());
         dish.setBacteriumList(newList);
+        Printer p;
+        p.printBoard(dish.getBacteriumList(), dish.getSize(), i + 1);
+    }
+}
+
+shared_ptr<Bacterium> getRandomBacterium(PetriDish dish) {
+    Position pos = Random::getRandomFrom(dish.getAvailablePositions());
+    switch (Random::random(1, 3)) {
+        case 1:
+            return make_shared<Bacillus>(pos);
+        case 2:
+            return make_shared<Coccus>(pos);
+        case 3:
+            return make_shared<Spirillum>(pos);
     }
 }
 
 void BacteriumSimulator::setUpDish() {
     vector<shared_ptr<Bacterium>> bacteriumList;
     for (int i = 0; i < dish.getSize() / 2; i++) { //takes up half the dish
-        Position pos = Random::getRandomFrom(dish.getAvailablePositions());
-        switch (Random::random(1, 3)) {
-            case 1: {
-                shared_ptr<Bacillus> bacillus = make_shared<Bacillus>(pos);
-                bacteriumList.push_back(bacillus);
-                dish.addBacteriumToBoard(bacillus);
-            }
-                break;
-            case 2: {
-                shared_ptr<Coccus> coccus = make_shared<Coccus>(pos);
-                bacteriumList.push_back(coccus);
-                dish.addBacteriumToBoard(coccus);
-            }
-                break;
-            case 3: {
-                shared_ptr<Spirillum> spirillum = make_shared<Spirillum>(pos);
-                bacteriumList.push_back(spirillum);
-                dish.addBacteriumToBoard(spirillum);
-            }
-                break;
-        }
-        dish.removePosition(pos);
+        shared_ptr<Bacterium> b = getRandomBacterium(dish);
+        bacteriumList.push_back(b);
+        dish.addBacteriumToBoard(b);
+        dish.removePosition(b->getPosition());
+
     }
     dish.setBacteriumList(bacteriumList);
 }

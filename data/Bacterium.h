@@ -20,6 +20,7 @@ public:
 
     virtual bool isAlive(vector<shared_ptr<Bacterium>> nearbyBacteria) = 0;
     virtual shared_ptr<Bacterium> duplicate(vector<shared_ptr<Position>> availablePositions) = 0;
+    virtual shared_ptr<Bacterium> duplicate(Position position) = 0;
 
 
 private:
