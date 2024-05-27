@@ -26,91 +26,15 @@ nearbyOf(const shared_ptr<Bacterium> &bacterium, const vector<shared_ptr<Bacteri
 
 BacteriumSimulator::BacteriumSimulator(PetriDish &dish) : dish(std::move(dish)) {}
 
-Position BacteriumSimulator::findFreePosition(int x, int y) {
-    vector<vector<shared_ptr<Bacterium>>> board = dish.getBoard();
-    int s = board.size() - 1;
-    int round = 1;
-    while (round < s) {
-        for (int dx = -round; dx <= round; ++dx) {
-            for (int dy = -round; dy <= round; ++dy) {
-                if (x + dx > s || y + dy > s || dx + x < 0 || dy + y < 0) {
-                    continue;
-                }
-                if (dx < round && dx > -round && dy < round && dy > -round) {
-                    continue;
-                }
-                if (board.at(x + dx).at(y + dy) == nullptr) {
-                    return {x + dx, y + dy};
-                }
-            }
-        }
-        round++;
-    }
-    throw NoPositionException();
-}
-
-
-
 shared_ptr<Position> BacteriumSimulator::pushBacteria(Position startingPos) {
-    try {
-        Position freeSpace = findFreePosition(startingPos.X, startingPos.Y);
-        vector<shared_ptr<Position>> route;
-        vector<shared_ptr<Bacterium>> bacteria;
-
-        //find positions, bacteria on route
-        if (startingPos.X < freeSpace.X) {
-            for (int i = startingPos.X + 1; i <= freeSpace.X; i++) {
-                route.push_back(make_shared<Position>(i, startingPos.Y));
-                if (!dish.getBacteriumOn(i, startingPos.Y)) {
-                    freeSpace.X = i;
-                    break;
-                }
-                bacteria.push_back(dish.getBacteriumOn(i, startingPos.Y));
-            }
-        } else {
-            for (int i = startingPos.X - 1; i >= freeSpace.X; i--) {
-                route.push_back(make_shared<Position>(i, startingPos.Y));
-                if (!dish.getBacteriumOn(i, startingPos.Y)) {
-                    freeSpace.X = i;
-                    break;
-                }
-                bacteria.push_back(dish.getBacteriumOn(i, startingPos.Y));
-            }
-        }
-        if (startingPos.Y < freeSpace.Y) {
-            for (int i = startingPos.Y + 1; i < freeSpace.Y; i++) {
-                route.push_back(make_shared<Position>(freeSpace.X, i));
-                if (!dish.getBacteriumOn(freeSpace.Y, i)) {
-                    freeSpace.Y = i;
-                    break;
-                }
-                bacteria.push_back(dish.getBacteriumOn(freeSpace.X, i));
-            }
-        } else {
-            for (int i = startingPos.Y - 1; i > freeSpace.Y; i--) {
-                route.push_back(make_shared<Position>(freeSpace.X, i));
-                if (!dish.getBacteriumOn(freeSpace.X, i)) {
-                    freeSpace.Y = i;
-                    break;
-                }
-
-                bacteria.push_back(dish.getBacteriumOn(freeSpace.X, i));
-            }
-        }
-
-        route.push_back(make_shared<Position>(freeSpace));
-        //move bacteria
-        for (int i = bacteria.size() - 2; i >= 0; i--) {
-            shared_ptr<Bacterium> b = bacteria.at(i);
-            dish.addToAvailablePositions(make_shared<Position>(b->getPosition()));
-            b->setPosition(Position(route.at(i + 1)->X, route.at(i + 1)->Y));
-            dish.removePosition(Position(route.at(i + 1)->X, route.at(i + 1)->Y));
-        }
-
-        return route.at(0);
-    } catch (NoPositionException &e) {
-        throw NoPositionException();
+    vector<shared_ptr<Tile>> route = dish.getRouteToFreePosition(startingPos);
+    for (int i = route.size() - 2; i >= 0; i--) {
+        shared_ptr<Bacterium> b = route.at(i)->bacterium;
+        dish.addToAvailablePositions(make_shared<Position>(b->getPosition()));
+        b->setPosition(Position(route.at(i + 1)->position->X, route.at(i + 1)->position->Y));
+        dish.removePosition(Position(Position(route.at(i + 1)->position->X, route.at(i + 1)->position->Y)));
     }
+    return route.at(0)->position;
 }
 
 void BacteriumSimulator::simulate(int rounds) {

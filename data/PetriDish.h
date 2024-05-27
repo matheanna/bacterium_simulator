@@ -6,6 +6,7 @@
 #include <vector>
 #include <iostream>
 #include "Bacterium.h"
+#include "Tile.h"
 #include <memory>
 #include <set>
 
@@ -24,11 +25,16 @@ public:
     void addToAvailablePositions(shared_ptr<Position> position);
     void removePosition(Position pos);
     shared_ptr<Bacterium> getBacteriumOn(int X, int Y);
+    vector<shared_ptr<Tile>> getRouteToFreePosition(Position from);
 private:
     int size;
+    Position findFreePosition(int x, int y);
     vector<shared_ptr<Bacterium>> bacteriumList;
     vector<vector<shared_ptr<Bacterium>>> board;
     vector<shared_ptr<Position>> availablePositions;
+
+    void AddToRouteX(vector<shared_ptr<Tile>> &route, Position &freeSpace, Position from);
+    void AddToRouteY(vector<shared_ptr<Tile>> &route, Position &freeSpace, Position from);
 };
 
 
